@@ -26,7 +26,7 @@ button,select,input,textarea{font:inherit;color:inherit}
 .tile b{font-size:.95em}.tile span{font-size:1.5em}
 .card{background:var(--sf);border:1px solid var(--ln);border-radius:14px;padding:14px;margin:10px 0}
 .row{display:flex;gap:8px;align-items:center}.row>*{flex:0 0 auto}.row>.g{flex:1 1 auto;min-width:0}
-input[type=text],input[type=number],input[type=date],textarea,select{width:100%;background:var(--sf);border:2px solid var(--ln);border-radius:10px;padding:11px;min-height:46px}
+input[type=text],input[type=number],input[type=date],input[type=password],textarea,select{width:100%;background:var(--sf);border:2px solid var(--ln);border-radius:10px;padding:11px;min-height:46px}
 textarea{min-height:96px}
 label{display:block;font-weight:700;margin:10px 0 4px}
 .bar{height:10px;background:var(--sg);border-radius:6px;overflow:hidden}.bar i{display:block;height:100%;background:var(--pri)}
@@ -110,12 +110,30 @@ return `<button class="back" onclick="go('tools')">← Tools</button><h1>Budget 
 function Tx(s){const a=parseFloat(ba.value);if(!(a>0)){ba.focus();return}S.tx.unshift({a:a*s,c:bc.value,dt:new Date().toLocaleDateString()});sv();R()}
 function LN(){if(v&&v.m=="g")return Gd(v.i);return `<h1>Learning</h1><p class="mut">Short practical guides. Open one, then save it as a plan.</p>`+C.map((c,i)=>`<h2>${c[0]} ${c[1]}</h2>`+G.map((g,j)=>g.c==i?`<button class="opt" onclick="go('learn',{m:'g',i:${j}})">${g.t}</button>`:"").join("")).join("")}
 function SV(){return `<h1>Saved</h1>`+(S.plans.length?S.plans.map((p,i)=>`<div class="card"><div class="row"><h3 class="g">${E(p.t)}</h3><button class="x" aria-label="Delete plan" onclick="if(confirm('Delete this plan?')){S.plans.splice(${i},1);sv();R()}">✕</button></div>${bar(pct(p.s))}${p.s.map((s,j)=>`<div class="item"><input type="checkbox" aria-label="Step done" ${s.d?"checked":""} onchange="S.plans[${i}].s[${j}].d^=1;sv();R()"><span class="${s.d?'done':''}">${E(s.t)}</span></div>`).join("")}</div>`).join(""):`<p>No saved plans yet. Solve a problem and tap “Save this plan”.</p><button class="btn" onclick="go('home')">Solve My Problem</button>`)}
+const SB="https://hbknqdtrsorabmthkhxm.supabase.co",KK="sb_publishable_Z696OJsVKe3ctMa6I352Kw_5WNiRRyH";
+let A=null,AM="";try{A=JSON.parse(localStorage.getItem("lh_auth"))}catch(e){}
+const sa=()=>{try{A?localStorage.setItem("lh_auth",JSON.stringify(A)):localStorage.removeItem("lh_auth")}catch(e){}};
+function ss(j){A={at:j.access_token,rt:j.refresh_token,exp:Date.now()+j.expires_in*1000,email:j.user.email,uid:j.user.id};sa()}
+async function rq(p,o,auth){o=o||{};const h=Object.assign({apikey:KK,"Content-Type":"application/json"},o.h||{});
+if(auth){if(A.exp&&Date.now()>A.exp-60000){const t=await rq("/auth/v1/token?grant_type=refresh_token",{m:"POST",b:{refresh_token:A.rt}});ss(t)}h.Authorization="Bearer "+A.at}
+const r=await fetch(SB+p,{method:o.m||"GET",headers:h,body:o.b?JSON.stringify(o.b):undefined});let j=null;try{j=await r.json()}catch(e){}
+if(!r.ok)throw new Error((j&&(j.msg||j.message||j.error_description||j.error))||"Request failed");return j}
+async function Au(m){const e=em.value.trim(),p=pw.value;if(!e||p.length<6){AM="Enter your email and a password of at least 6 characters.";return R()}
+try{AM="Please wait…";R();
+if(m=="up"){const j=await rq("/auth/v1/signup",{m:"POST",b:{email:e,password:p}});if(j.access_token){ss(j);AM="Account created. You are logged in."}else AM="Account created. Check your email to confirm it, then log in."}
+else{const j=await rq("/auth/v1/token?grant_type=password",{m:"POST",b:{email:e,password:p}});ss(j);AM="Logged in."}}
+catch(x){AM="Could not complete: "+x.message}R()}
+async function Bk(){try{AM="Backing up…";R();await rq("/rest/v1/backups",{m:"POST",h:{Prefer:"resolution=merge-duplicates"},b:{user_id:A.uid,data:{plans:S.plans,L:S.L,tx:S.tx},updated_at:new Date().toISOString()}},1);AM="Backed up at "+new Date().toLocaleTimeString()+"."}catch(x){AM="Backup failed: "+x.message}R()}
+async function Rs(){if(!confirm("Replace the data on this device with your online backup?"))return;try{const j=await rq("/rest/v1/backups?select=data,updated_at",{},1);if(!j.length){AM="No backup found yet.";return R()}const d=j[0].data;S.plans=d.plans||[];S.L=Object.assign({task:[],goal:[],learn:[],check:[],job:[]},d.L||{});S.tx=d.tx||[];sv();AM="Restored the backup from "+new Date(j[0].updated_at).toLocaleString()+"."}catch(x){AM="Restore failed: "+x.message}R()}
+async function Db(){if(!confirm("Delete your online backup? Data on this device is not deleted."))return;try{await rq("/rest/v1/backups?user_id=eq."+A.uid,{m:"DELETE"},1);AM="Online backup deleted."}catch(x){AM="Delete failed: "+x.message}R()}
+function Lo(){A=null;sa();AM="Logged out.";R()}
+function AC(){return `<h2>Account (optional)</h2><div class="card">`+(A?`<p>Logged in as <b>${E(A.email)}</b></p><div class="row" style="flex-wrap:wrap"><button class="btn s" onclick="Bk()">Back up now</button><button class="btn s" onclick="Rs()">Restore backup</button><button class="btn s" onclick="Db()">Delete online backup</button><button class="btn s" onclick="Lo()">Log out</button></div>`:`<p>You do not need an account. Make one only if you want an online backup of your plans and tools.</p><label for="em">Email</label><input type="text" id="em" inputmode="email" autocomplete="email"><label for="pw">Password</label><input type="password" id="pw" autocomplete="current-password"><div class="row" style="margin-top:12px"><button class="btn" onclick="Au('in')">Log in</button><button class="btn s" onclick="Au('up')">Sign up</button></div>`)+(AM?`<p role="status">${E(AM)}</p>`:"")+`<p class="mut">If you back up, your plans, tasks and budget records are stored online with Supabase. You can delete your online backup here. Deleting the account itself is not available yet.</p></div>`}
 function SE(){return `<h1>Settings</h1><label for="fs">Text size</label><select id="fs" onchange="S.fs=+this.value;sv();R()">${["Small","Medium","Large"].map((x,i)=>`<option value="${i}" ${S.fs==i?"selected":""}>${x}</option>`).join("")}</select>
-<h2>Privacy</h2><div class="card"><p>Everything you enter is stored only on this device, in this browser. Nothing is sent online. If you clear browser data or uninstall, it may be lost.</p><button class="btn s" onclick="if(confirm('Delete ALL your saved information on this device?')){S={fs:S.fs,plans:[],L:{task:[],goal:[],learn:[],check:[],job:[]},tx:[]};sv();R()}">Clear all my data</button></div>
-<h2>Premium (coming later)</h2><div class="card"><p>Premium will add extra plans and templates. Essential help will always stay free.</p><p>₦7,000 per month · ₦80,000 per year</p><p class="mut">Payments are not enabled yet.</p></div>
+<h2>Privacy</h2><div class="card"><p>Everything you enter is stored on this device, in this browser. Nothing is sent online unless you log in and choose to back up. If you clear browser data or uninstall, it may be lost.</p><button class="btn s" onclick="if(confirm('Delete ALL your saved information on this device?')){S={fs:S.fs,plans:[],L:{task:[],goal:[],learn:[],check:[],job:[]},tx:[]};sv();R()}">Clear all my data</button></div>
+${AC()}<h2>Premium (coming later)</h2><div class="card"><p>Premium will add extra plans and templates. Essential help will always stay free.</p><p>₦7,000 per month · ₦80,000 per year</p><p class="mut">Payments are not enabled yet.</p></div>
 <h2>Show Love</h2><div class="card"><p>Optional voluntary support for LifeHelper will be available later. You will never be pressured.</p></div>
 <h2>Support</h2><div class="card"><p>Found a wrong guide, a broken link, or a poor translation? Tell us.</p><a class="btn" style="display:block;text-align:center;text-decoration:none" href="https://docs.google.com/forms/d/e/1FAIpQLSez9FxSZ0_Lvgi--kZ900qLy3SbWK5UrXGWQoutjFMf01Orew/viewform" target="_blank" rel="noopener">Report a problem</a><p class="mut">This opens an online Google Form, so what you type there is sent online. Only share what is needed. A separate support contact is not set up yet.</p></div>
-<h2>Not yet available</h2><p class="mut">Reminders, accounts, cloud backup, payments, other languages, and verified local services.</p>`}
+<h2>Not yet available</h2><p class="mut">Reminders, payments, other languages, and verified local services.</p>`}
 R();
 if("serviceWorker" in navigator)addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));
 </script></body></html>
