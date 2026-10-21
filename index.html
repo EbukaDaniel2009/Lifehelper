@@ -114,8 +114,8 @@ function SE(){return `<h1>Settings</h1><label for="fs">Text size</label><select 
 <h2>Privacy</h2><div class="card"><p>Everything you enter is stored only on this device, in this browser. Nothing is sent online. If you clear browser data or uninstall, it may be lost.</p><button class="btn s" onclick="if(confirm('Delete ALL your saved information on this device?')){S={fs:S.fs,plans:[],L:{task:[],goal:[],learn:[],check:[],job:[]},tx:[]};sv();R()}">Clear all my data</button></div>
 <h2>Premium (coming later)</h2><div class="card"><p>Premium will add extra plans and templates. Essential help will always stay free.</p><p>₦7,000 per month · ₦80,000 per year</p><p class="mut">Payments are not enabled yet.</p></div>
 <h2>Show Love</h2><div class="card"><p>Optional voluntary support for LifeHelper will be available later. You will never be pressured.</p></div>
-<h2>Support</h2><div class="card"><p>Reporting problems with guidance and a support contact are not set up yet.</p></div>
-<h2>Not yet available</h2><p class="mut">Reminders, accounts, cloud backup, other languages, and verified local services.</p>`}
+<h2>Support</h2><div class="card"><p>Found a wrong guide, a broken link, or a poor translation? Tell us.</p><a class="btn" style="display:block;text-align:center;text-decoration:none" href="https://docs.google.com/forms/d/e/1FAIpQLSez9FxSZ0_Lvgi--kZ900qLy3SbWK5UrXGWQoutjFMf01Orew/viewform" target="_blank" rel="noopener">Report a problem</a><p class="mut">This opens an online Google Form, so what you type there is sent online. Only share what is needed. A separate support contact is not set up yet.</p></div>
+<h2>Not yet available</h2><p class="mut">Reminders, accounts, cloud backup, payments, other languages, and verified local services.</p>`}
 R();
 if("serviceWorker" in navigator)addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));
 </script></body></html>
