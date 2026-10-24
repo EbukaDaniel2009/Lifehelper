@@ -443,9 +443,10 @@ const SB="https://hbknqdtrsorabmthkhxm.supabase.co",KK="sb_publishable_Z696OJsVK
 let A=null,AM="";try{A=JSON.parse(localStorage.getItem("lh_auth"))}catch(e){}
 const sa=()=>{try{A?localStorage.setItem("lh_auth",JSON.stringify(A)):localStorage.removeItem("lh_auth")}catch(e){}};
 function ss(j){A={at:j.access_token,rt:j.refresh_token,exp:Date.now()+j.expires_in*1000,email:j.user.email,uid:j.user.id};sa()}
+async function fx(u,o){try{return await fetch(u,o)}catch(e){await new Promise(r=>setTimeout(r,1500));try{return await fetch(u,o)}catch(e2){throw new Error("Could not reach the server. Check your internet connection and try again.")}}}
 async function rq(p,o,auth){o=o||{};const h=Object.assign({apikey:KK,"Content-Type":"application/json"},o.h||{});
 if(auth){if(A.exp&&Date.now()>A.exp-60000){const t=await rq("/auth/v1/token?grant_type=refresh_token",{m:"POST",b:{refresh_token:A.rt}});ss(t)}h.Authorization="Bearer "+A.at}
-const r=await fetch(SB+p,{method:o.m||"GET",headers:h,body:o.b?JSON.stringify(o.b):undefined});let j=null;try{j=await r.json()}catch(e){}
+const r=await fx(SB+p,{method:o.m||"GET",headers:h,body:o.b?JSON.stringify(o.b):undefined});let j=null;try{j=await r.json()}catch(e){}
 if(!r.ok)throw new Error((j&&(j.msg||j.message||j.error_description||j.error))||"Request failed");return j}
 async function Au(m){const e=em.value.trim(),p=pw.value;if(!e||p.length<6){AM="Enter your email and a password of at least 6 characters.";return R()}
 try{AM="Please wait…";R();
