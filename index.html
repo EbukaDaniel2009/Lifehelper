@@ -491,7 +491,7 @@ ${AC()}<h2>Premium</h2><div class="card"><p><b>Free</b> always includes practica
 <h2>Not yet available</h2><p class="mut">Reminders, payments, other languages, and verified local services.</p>`}
 R();
 if(LG!="en"){document.documentElement.dir=LG=="ar"?"rtl":"ltr";window.gtInit=function(){new google.translate.TranslateElement({pageLanguage:"en",autoDisplay:false},"gt_el")};const gs=document.createElement("script");gs.src="https://translate.google.com/translate_a/element.js?cb=gtInit";document.head.appendChild(gs)}
-if(LG!="en")setTimeout(()=>{if(!/translated/.test(document.documentElement.className||"")){const b=document.createElement("div");b.style.cssText="position:fixed;top:0;left:0;right:0;z-index:20;background:#F2A93B;color:#111;padding:10px 12px;font-size:.9em";b.innerHTML="Translation did not start. In Chrome, tap the three dots, then <b>Translate</b>, or <a href=\""+"https://translate.google.com/translate?sl=en&tl="+LG+"&u="+encodeURIComponent(location.href)+"\" style=\"color:#111;font-weight:700\">open the translated page</a>. <a href=\"#\" onclick=\"setLang('en');return false\" style=\"color:#111\">Back to English</a>";document.body.appendChild(b)}},9000);
+
 
 if("serviceWorker" in navigator)addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));
 </script></body></html>
