@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://ebukadaniel2009.github.io/Lifehelper/sitemap.xml
